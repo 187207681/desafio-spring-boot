@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: API de tareas NUEVO SPA
+  description: API Rest para gestionar tareas
+  version: 1.0.0
+  contact:
+    name: Gustavo Vigueras
+    email: g.vigueras01@gmail.com
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Tareas
+    description: API para gestionar tareas
+paths:
+  /api/tareas:
+    get:
+      security:
+        - jwt: []
+      tags:
+        - Tareas
+      summary: Listar tareas
+      description: Obtiene una lista de tareas
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tarea'
+    post:
+      security:
+        - jwt: []
+      tags:
+        - Tareas
+      summary: Crear una tarea
+      description: Crea una nueva tarea
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tarea'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarea'
+  /api/tareas/{id}:
+    get:
+      security:
+        - jwt: []
+      tags:
+        - Tareas
+      summary: Obtener una tarea
+      description: Obtiene una tarea por su ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la tarea
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarea'
+    put:
+      security:
+        - jwt: []
+      tags:
+        - Tareas
+      summary: Actualizar una tarea
+      description: Actualiza una tarea por su ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la tarea
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tarea'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarea'
+    delete:
+      security:
+        - jwt: []
+      tags:
+        - Tareas
+      summary: Eliminar una tarea
+      description: Elimina una tarea por su ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la tarea
+          schema:
+            type: integer
+            format: int64
+      responses:
+        204:
+          description: No Content
+  /api/login:
+    post:
+      tags:
+        - Autenticación
+      summary: Iniciar sesión
+      description: Obtiene un token JWT de autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Token JWT de autenticación
+  /api/logout:
+    post:
+      tags:
+        - Autenticación
+      summary: Cerrar sesión
+      description: Invalida el token JWT de autenticación
+      responses:
+        204:
+          description: No Content
+
+components:
+  schemas:
+    Tarea:
+      type: object
+      required:
+        - titulo
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador de la tarea
+        titulo:
+          type: string
+          description: Título de la tarea
+        fecha_inicio:
+          type: string
+          format: date
+          description: Fecha de inicio de la tarea
+        fecha_ultima_actualizacion:
+          type: string
+          format: date
+          description: Fecha de última actualización de la tarea
+        estado:
+          type: string
+          enum:
+            - pendiente
+            - en_curso
+            - completada
+          description: Estado actual de la tarea
+        descripcion:
+          type: string
+          description: Descripción de la tarea
+    Usuario:
+      type: object
+      required:
+        - nombre
+        - password
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador del usuario
+        nombre:
+          type: string
+          description: Nombre del usuario
+        password:
+          type: string
+          description: Contraseña del usuario
+        fecha_creacion:
+          type: string
+          format: date
+          description: Fecha de creación del usuario
+        rol:
+          type: string
+          enum:
+            - administrador
+            - usuario
+          description: Rol del usuario
+        correo:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+  securitySchemes:
+    jwt:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token JWT de autenticación
